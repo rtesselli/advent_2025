@@ -1,3 +1,7 @@
+from collections.abc import Callable
+import re
+
+
 def parse_input() -> list[tuple[int, int]]:
     with open("data/day02.txt") as f:
         lines = f.readlines()
@@ -15,19 +19,34 @@ def is_invalid(value: int) -> bool:
     return value[:len(value) // 2] == value[len(value) // 2:]
 
 
-def invalid_ids(values: list[tuple[int, int]]) -> list[int]:
+def is_invalid2(value: int) -> bool:
+    str_value = str(value)
+    for substr_len in range(1, len(str_value) // 2 + 1):
+        substr = str_value[:substr_len]
+        matches = re.findall(substr, str_value)
+        if sum(len(match) for match in matches) == len(str_value):
+            return True
+    return False
+
+
+def invalid_ids(values: list[tuple[int, int]], invalid_fn: Callable[[int], bool]) -> list[int]:
     return [
         value
         for start, end in values
         for value in range(start, end + 1)
-        if is_invalid(value)
+        if invalid_fn(value)
     ]
 
 
 def part1(values: list[tuple[int, int]]) -> int:
-    return sum(invalid for invalid in invalid_ids(values))
+    return sum(invalid for invalid in invalid_ids(values, is_invalid))
+
+
+def part2(values: list[tuple[int, int]]) -> int:
+    return sum(invalid for invalid in invalid_ids(values, is_invalid2))
 
 
 if __name__ == '__main__':
     data = parse_input()
     print(part1(data))
+    print(part2(data))
