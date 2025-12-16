@@ -20,6 +20,22 @@ def day01_part1(values: list[tuple[str, int]]) -> int:
     return zero_counts
 
 
+def day01_part2(values: list[tuple[str, int]]) -> int:
+    curr = 50
+    zero_counts = 0
+    for direction, value in values:
+        new_zero_counts = value // 100
+        next_ = (curr + value if direction == 'R' else curr - value) % 100
+        if direction == 'R':
+            new_zero_counts += (next_ < curr)
+        else:
+            new_zero_counts += (next_ > curr) + (next_ == 0) if curr != 0 else 0
+        zero_counts += new_zero_counts
+        curr = next_
+    return zero_counts
+
+
 if __name__ == '__main__':
     data = parse_input()
     print(day01_part1(data))
+    print(day01_part2(data))
